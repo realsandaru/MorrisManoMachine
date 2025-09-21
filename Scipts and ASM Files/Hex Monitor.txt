@@ -1,0 +1,186 @@
+----------------------------------------------
+            ASCII TO HEX NIBBLE
+----------------------------------------------
+
+CHR, DEC 0
+NNE, HEX 39
+HXA, HEX 41
+HX0, HEX 30
+HX8, HEX 8
+HXS, HEX 20
+HCR, HEX 0
+
+
+RHX, DEC 0
+W01, SKI
+BUN W01
+INP
+STA CHR
+
+//IGNORE SPACE
+LDA HXS
+CMA
+INC
+ADD CHR
+SZA
+BUN C01
+BUN RHX
+
+
+//IGNORE ENTER
+C01, LDA HCR
+CMA
+INC
+ADD CHR
+SZA
+BUN C02
+BUN RHX
+
+//CHECK RANGE
+C02, LDA NNE
+CMA
+INC
+ADD CHR
+CIL
+SZE
+BUN LRG
+BUN SML
+
+
+//HANDLE LETTER
+LRG, LDA HXA
+CMA
+INC
+ADD CHR
+ADD HX8
+BUN, RHX I
+
+//HANDLE NUMBER
+SML, LDA HX0
+CMA
+INC
+ADD CHR
+BUN, RHX I
+
+-----------------------------------------------
+               READ ADDRESS
+-----------------------------------------------
+TMP, HEX 0
+
+RDD, DEC 0
+LDA CH1
+STA TMP
+BSA SH4
+STA TMP
+BSA RHX
+ADD TMP
+BSA SH4
+STA TMP
+BSA RHX
+ADD TMP
+BSA SH4
+STA TMP
+BSA RHX
+ADD TMP
+BUN RDD I
+
+-----------------------------------------------
+          SHIFT A NIBBLE TO THE LEFT
+-----------------------------------------------
+MSK, HEX FFF0
+
+
+SH4, DEC 0
+CIL
+CIL
+CIL
+CIL
+AND MSK
+BUN SH4 I
+
+-----------------------------------------------
+	       ESCAPE SEQUENCE
+-----------------------------------------------
+PCA, DEC 0
+
+ESC, BSA RDD
+STA PCA
+BUN PCA I
+
+-----------------------------------------------
+                  START
+-----------------------------------------------
+HXG, 6
+M01, DEC 0
+CH1, DEC 0
+
+SRT, SKI
+BUN SRT
+INP
+STA CH1
+
+//IGNORE ENTER
+LDA HCR
+CMA
+INC
+ADD CH1
+SZA
+BUN C03
+BUN SRT
+
+//CHECK FOR ESCAPE
+
+C03, BSA RHX
+STA CH1
+LDA HXG 
+CMA
+INC
+ADD CH1
+SZA
+BUN GRN
+BUN ESC
+
+//STORE IN INPUT BUFFER
+GRN, BSA RDD
+STA M01
+BSA RDD
+STA M01 I
+BUN STR
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
